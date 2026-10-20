@@ -23,14 +23,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Gradle
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
           unzip -q gradle-8.7-bin.zip
           echo "$GITHUB_WORKSPACE/gradle-8.7/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          test -d "$ANDROID_HOME/platforms/android-35" || (
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+              "platforms;android-35" "build-tools;35.0.0"
+          )
 
       - name: Build APK
         working-directory: BittuBirthdayAndroid
